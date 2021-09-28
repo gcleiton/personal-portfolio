@@ -23,11 +23,18 @@ export class AddAccount {
   ) {}
 
   async perform(input: AddAccountInput): Promise<void> {
+    const errors = await this.canPerform(input)
+    if (errors.length >= 1) {
+      throw new ValidationError(errors)
+    }
+  }
+
+  async canPerform(input: AddAccountInput): Promise<Error[]> {
     const errors = []
+
     const isUsernameInUse = await this.accountRepository.checkByUsername({
       username: input.username
     })
-
     if (isUsernameInUse) {
       errors.push(new UsernameInUseError())
     }
@@ -35,13 +42,10 @@ export class AddAccount {
     const isEmailInUse = await this.accountRepository.checkByEmail({
       email: input.email
     })
-
     if (isEmailInUse) {
       errors.push(new EmailInUseError())
     }
 
-    if (errors.length >= 1) {
-      throw new ValidationError(errors)
-    }
+    return errors
   }
 }
