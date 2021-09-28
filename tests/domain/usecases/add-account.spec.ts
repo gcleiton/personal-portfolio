@@ -37,7 +37,7 @@ describe('AddAccount', () => {
     expect(accountRepository.checkByUsername).toHaveBeenCalledTimes(1)
   })
 
-  it('should throw ValidationError if username is already taken', async () => {
+  it('should throw ValidationError if username already taken', async () => {
     accountRepository.checkByUsername.mockResolvedValueOnce(true)
 
     const errorPromise = sut.perform(fakeAccount)
@@ -56,13 +56,24 @@ describe('AddAccount', () => {
     expect(accountRepository.checkByEmail).toHaveBeenCalledTimes(1)
   })
 
-  it('should throw ValidationError if email is already taken', async () => {
+  it('should throw ValidationError if email already taken', async () => {
     accountRepository.checkByEmail.mockResolvedValueOnce(true)
 
     const errorPromise = sut.perform(fakeAccount)
 
     await expect(errorPromise).rejects.toThrow(
       new ValidationError([new EmailInUseError()])
+    )
+  })
+
+  it('should throw ValidationError if email and username already taken', async () => {
+    accountRepository.checkByUsername.mockResolvedValueOnce(true)
+    accountRepository.checkByEmail.mockResolvedValueOnce(true)
+
+    const errorPromise = sut.perform(fakeAccount)
+
+    await expect(errorPromise).rejects.toThrow(
+      new ValidationError([new UsernameInUseError(), new EmailInUseError()])
     )
   })
 })
