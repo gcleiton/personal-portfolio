@@ -11,6 +11,7 @@ import {
   ValidationError,
   EmailInUseError
 } from '@/domain/entities/errors'
+import { Hasher } from '@/domain/contracts/gateways'
 
 describe('AddAccount', () => {
   const fakeAccount = mockAddAccountInput()
@@ -18,14 +19,17 @@ describe('AddAccount', () => {
   let accountRepository: MockProxy<
     CheckAccountByUsernameRepository & CheckAccountByEmailRepository
   >
+  let cryptography: MockProxy<Hasher>
   let sut: AddAccount
 
   beforeAll(() => {
     accountRepository = mock()
+    cryptography = mock()
+    cryptography.hash.mockResolvedValue('hashed_password')
   })
 
   beforeEach(() => {
-    sut = new AddAccount(accountRepository)
+    sut = new AddAccount(accountRepository, cryptography)
   })
 
   it('should call CheckAccountByUsernameRepository with correct input', async () => {
@@ -75,5 +79,14 @@ describe('AddAccount', () => {
     await expect(errorPromise).rejects.toThrow(
       new ValidationError([new UsernameInUseError(), new EmailInUseError()])
     )
+  })
+
+  it('should call Hasher with correct input', async () => {
+    await sut.perform(fakeAccount)
+
+    expect(cryptography.hash).toHaveBeenCalledWith({
+      plainText: fakeAccount.password
+    })
+    expect(cryptography.hash).toHaveBeenCalledTimes(1)
   })
 })

@@ -10,7 +10,7 @@
 > ## Fluxo primário
 1. ✅ Consultar se já existe alguma conta com o username fornecido
 2. ✅ Consultar se já existe alguma conta com o email fornecido
-3. Gerar uma senha criptografada
+3. ✅ Gerar uma senha criptografada
 4. Criar uma conta para o usuário com os dados fornecidos
 5. Criar um token de acesso, a partir do ID do usuário, com expiração de 1 minuto
 6. Criar um refresh token, a partir do ID do usuário, com expiração após 3 dias à meia noite.

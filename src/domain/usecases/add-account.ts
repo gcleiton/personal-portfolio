@@ -7,6 +7,7 @@ import {
   UsernameInUseError,
   EmailInUseError
 } from '@/domain/entities/errors'
+import { Hasher } from '@/domain/contracts/gateways'
 
 export type AddAccountInput = {
   username: string
@@ -19,7 +20,8 @@ export type AddAccountInput = {
 export class AddAccount {
   constructor(
     private readonly accountRepository: CheckAccountByUsernameRepository &
-      CheckAccountByEmailRepository
+      CheckAccountByEmailRepository,
+    private readonly cryptography: Hasher
   ) {}
 
   async perform(input: AddAccountInput): Promise<void> {
@@ -27,6 +29,8 @@ export class AddAccount {
     if (errors.length >= 1) {
       throw new ValidationError(errors)
     }
+
+    await this.cryptography.hash({ plainText: input.password })
   }
 
   async canPerform(input: AddAccountInput): Promise<Error[]> {
