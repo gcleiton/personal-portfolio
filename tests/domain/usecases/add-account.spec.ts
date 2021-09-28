@@ -1,14 +1,23 @@
 import { mock, MockProxy } from 'jest-mock-extended'
 
-import { CheckAccountByUsernameRepository } from '@/domain/contracts/repositories'
+import {
+  CheckAccountByEmailRepository,
+  CheckAccountByUsernameRepository
+} from '@/domain/contracts/repositories'
 import { AddAccount } from '@/domain/usecases'
 import { mockAddAccountInput } from './mocks/mock-account'
-import { UsernameInUseError, ValidationError } from '@/domain/entities/errors'
+import {
+  UsernameInUseError,
+  ValidationError,
+  EmailInUseError
+} from '@/domain/entities/errors'
 
 describe('AddAccount', () => {
   const fakeAccount = mockAddAccountInput()
 
-  let accountRepository: MockProxy<CheckAccountByUsernameRepository>
+  let accountRepository: MockProxy<
+    CheckAccountByUsernameRepository & CheckAccountByEmailRepository
+  >
   let sut: AddAccount
 
   beforeAll(() => {
@@ -35,6 +44,25 @@ describe('AddAccount', () => {
 
     await expect(errorPromise).rejects.toThrow(
       new ValidationError([new UsernameInUseError()])
+    )
+  })
+
+  it('should call CheckAccountByEmailRepository with correct input', async () => {
+    await sut.perform(fakeAccount)
+
+    expect(accountRepository.checkByEmail).toHaveBeenCalledWith({
+      email: fakeAccount.email
+    })
+    expect(accountRepository.checkByEmail).toHaveBeenCalledTimes(1)
+  })
+
+  it('should throw ValidationError if email is already taken', async () => {
+    accountRepository.checkByEmail.mockResolvedValueOnce(true)
+
+    const errorPromise = sut.perform(fakeAccount)
+
+    await expect(errorPromise).rejects.toThrow(
+      new ValidationError([new EmailInUseError()])
     )
   })
 })
