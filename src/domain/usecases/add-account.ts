@@ -1,4 +1,5 @@
 import {
+  AddAccountRepository,
   CheckAccountByEmailRepository,
   CheckAccountByUsernameRepository
 } from '@/domain/contracts/repositories/user-account'
@@ -20,7 +21,8 @@ export type AddAccountInput = {
 export class AddAccount {
   constructor(
     private readonly accountRepository: CheckAccountByUsernameRepository &
-      CheckAccountByEmailRepository,
+      CheckAccountByEmailRepository &
+      AddAccountRepository,
     private readonly cryptography: Hasher
   ) {}
 
@@ -30,7 +32,11 @@ export class AddAccount {
       throw new ValidationError(errors)
     }
 
-    await this.cryptography.hash({ plainText: input.password })
+    const hashedPassword = await this.cryptography.hash({
+      plainText: input.password
+    })
+
+    await this.accountRepository.add({ ...input, password: hashedPassword })
   }
 
   async canPerform(input: AddAccountInput): Promise<Error[]> {
