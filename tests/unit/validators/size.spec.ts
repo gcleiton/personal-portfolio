@@ -2,7 +2,7 @@ import { StringMaxFieldError, StringMinFieldError } from '@/application/errors'
 import {
   StringMaxValidator,
   StringMinValidator
-} from '@/application/validation/validators/size'
+} from '@/application/validation/validators'
 
 const fieldValue = 'any_field_value'
 
