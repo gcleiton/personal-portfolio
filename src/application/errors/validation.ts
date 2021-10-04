@@ -1,3 +1,12 @@
+export class ValidationError extends Error {
+  errors: Error[]
+
+  constructor(errors: Error[]) {
+    super('Falha na Validação.')
+    this.errors = errors
+  }
+}
+
 export class RequiredFieldError extends Error {
   constructor() {
     super('O campo é obrigatório.')
