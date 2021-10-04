@@ -27,7 +27,7 @@ export class AddAccount {
   ) {}
 
   async perform(input: AddAccountInput): Promise<void> {
-    const errors = await this.canPerform(input)
+    const errors = await this.validate(input)
     if (errors.length >= 1) {
       throw new ValidationError(errors)
     }
@@ -39,7 +39,7 @@ export class AddAccount {
     await this.accountRepository.add({ ...input, password: hashedPassword })
   }
 
-  async canPerform(input: AddAccountInput): Promise<Error[]> {
+  async validate(input: AddAccountInput): Promise<Error[]> {
     const errors = []
 
     const isUsernameInUse = await this.accountRepository.checkByUsername({
