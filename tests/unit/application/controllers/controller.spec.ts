@@ -52,4 +52,10 @@ describe('Controller', () => {
       data: new ServerError()
     })
   })
+
+  it('should return same result as perform', async () => {
+    const response = await sut.handle('any_value')
+
+    expect(response).toEqual(sut.result)
+  })
 })
