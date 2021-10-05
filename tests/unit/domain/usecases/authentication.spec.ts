@@ -1,3 +1,4 @@
+import { HashComparer } from '@/domain/contracts/gateways'
 import { LoadAccountByUsernameRepository } from '@/domain/contracts/repositories'
 import { AuthenticationError } from '@/domain/entities/errors'
 import { AuthenticationUseCase } from '@/domain/usecases'
@@ -8,6 +9,8 @@ describe('Authentication UseCase', () => {
   const fakeAuthenticationInput = mockAuthenticationInput()
 
   let accountRepository: MockProxy<LoadAccountByUsernameRepository>
+  let cryptography: MockProxy<HashComparer>
+
   let sut: AuthenticationUseCase
 
   beforeAll(() => {
@@ -17,10 +20,12 @@ describe('Authentication UseCase', () => {
       username: 'any_username',
       password: 'any_hashed_password'
     })
+    cryptography = mock()
+    cryptography.compare.mockResolvedValue(true)
   })
 
   beforeEach(() => {
-    sut = new AuthenticationUseCase(accountRepository)
+    sut = new AuthenticationUseCase(accountRepository, cryptography)
   })
 
   it('should call LoadAccountByUsernameRepository with correct input', async () => {
@@ -38,5 +43,15 @@ describe('Authentication UseCase', () => {
     const promise = sut.perform(fakeAuthenticationInput)
 
     await expect(promise).rejects.toThrow(new AuthenticationError())
+  })
+
+  it('should call HasherComparer with correct input', async () => {
+    await sut.perform(fakeAuthenticationInput)
+
+    expect(cryptography.compare).toHaveBeenCalledWith({
+      plainText: fakeAuthenticationInput.password,
+      digest: 'any_hashed_password'
+    })
+    expect(cryptography.compare).toHaveBeenCalledTimes(1)
   })
 })
