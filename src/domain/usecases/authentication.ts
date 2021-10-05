@@ -7,7 +7,7 @@ import { AuthenticationError } from '@/domain/entities/errors'
 import { HashComparer, TokenGenerator } from '@/domain/contracts/gateways'
 import { AccessToken, RefreshToken } from '@/domain/entities'
 
-export class AuthenticationUseCase {
+export class AuthenticationUseCase implements Authentication {
   constructor(
     private readonly accountRepository: LoadAccountByUsernameRepository &
       AddRefreshTokenRepository,
@@ -15,7 +15,7 @@ export class AuthenticationUseCase {
     private readonly tokenGenerator: TokenGenerator
   ) {}
 
-  async perform(input: Authentication.Input): Promise<void> {
+  async perform(input: Authentication.Input): Promise<Authentication.Output> {
     const account = await this.accountRepository.checkByUsername({
       username: input.username
     })
@@ -27,18 +27,22 @@ export class AuthenticationUseCase {
       })
 
       if (isValidPassword) {
-        await this.tokenGenerator.generate({
+        const accessToken = await this.tokenGenerator.generate({
           key: account.id,
           expirationInMs: AccessToken.expirationInMs
         })
 
-        const refreshToken = new RefreshToken(account.id)
-        await this.accountRepository.addRefreshToken(refreshToken)
-      }
+        const refreshTokenModel = new RefreshToken(account.id)
+        const { id: refreshToken } =
+          await this.accountRepository.addRefreshToken(refreshTokenModel)
 
-      if (!isValidPassword) throw new AuthenticationError()
-    } else {
-      throw new AuthenticationError()
+        return {
+          accessToken,
+          refreshToken
+        }
+      }
     }
+
+    throw new AuthenticationError()
   }
 }

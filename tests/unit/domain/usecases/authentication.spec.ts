@@ -27,10 +27,15 @@ describe('Authentication UseCase', () => {
       username: 'any_username',
       password: 'any_hashed_password'
     })
+    accountRepository.addRefreshToken.mockResolvedValue({
+      id: 'any_refresh_token',
+      expiresAt: 'any_expires_at',
+      userId: 'any_user_id'
+    })
     cryptography = mock()
     cryptography.compare.mockResolvedValue(true)
     tokenGenerator = mock()
-    tokenGenerator.generate.mockResolvedValue('any_token')
+    tokenGenerator.generate.mockResolvedValue('any_access_token')
   })
 
   beforeEach(() => {
@@ -93,5 +98,14 @@ describe('Authentication UseCase', () => {
       expect.any(RefreshToken)
     )
     expect(accountRepository.addRefreshToken).toHaveBeenCalledTimes(1)
+  })
+
+  it('should return access token and refresh token on success', async () => {
+    const output = await sut.perform(fakeAuthenticationInput)
+
+    expect(output).toEqual({
+      accessToken: 'any_access_token',
+      refreshToken: 'any_refresh_token'
+    })
   })
 })

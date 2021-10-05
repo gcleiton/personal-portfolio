@@ -1,5 +1,5 @@
 export interface Authentication {
-  perform: (input: Authentication.Input) => Promise<void>
+  perform: (input: Authentication.Input) => Promise<Authentication.Output>
 }
 
 export namespace Authentication {
@@ -11,6 +11,5 @@ export namespace Authentication {
   export type Output = {
     accessToken: string
     refreshToken: string
-    expiresIn: number
   }
 }
