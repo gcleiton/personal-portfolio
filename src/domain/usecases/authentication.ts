@@ -1,12 +1,16 @@
-import { LoadAccountByUsernameRepository } from '@/domain/contracts/repositories'
+import {
+  AddRefreshTokenRepository,
+  LoadAccountByUsernameRepository
+} from '@/domain/contracts/repositories'
 import { Authentication } from '@/domain/contracts/usecases'
 import { AuthenticationError } from '@/domain/entities/errors'
 import { HashComparer, TokenGenerator } from '@/domain/contracts/gateways'
-import { AccessToken } from '@/domain/entities'
+import { AccessToken, RefreshToken } from '@/domain/entities'
 
 export class AuthenticationUseCase {
   constructor(
-    private readonly accountRepository: LoadAccountByUsernameRepository,
+    private readonly accountRepository: LoadAccountByUsernameRepository &
+      AddRefreshTokenRepository,
     private readonly cryptography: HashComparer,
     private readonly tokenGenerator: TokenGenerator
   ) {}
@@ -27,6 +31,9 @@ export class AuthenticationUseCase {
           key: account.id,
           expirationInMs: AccessToken.expirationInMs
         })
+
+        const refreshToken = new RefreshToken(account.id)
+        await this.accountRepository.addRefreshToken(refreshToken)
       }
 
       if (!isValidPassword) throw new AuthenticationError()

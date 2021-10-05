@@ -1,6 +1,9 @@
 import { HashComparer, TokenGenerator } from '@/domain/contracts/gateways'
-import { LoadAccountByUsernameRepository } from '@/domain/contracts/repositories'
-import { AccessToken } from '@/domain/entities'
+import {
+  LoadAccountByUsernameRepository,
+  AddRefreshTokenRepository
+} from '@/domain/contracts/repositories'
+import { AccessToken, RefreshToken } from '@/domain/entities'
 import { AuthenticationError } from '@/domain/entities/errors'
 import { AuthenticationUseCase } from '@/domain/usecases'
 import { mock, MockProxy } from 'jest-mock-extended'
@@ -9,7 +12,9 @@ import { mockAuthenticationInput } from './mocks/mock-account'
 describe('Authentication UseCase', () => {
   const fakeAuthenticationInput = mockAuthenticationInput()
 
-  let accountRepository: MockProxy<LoadAccountByUsernameRepository>
+  let accountRepository: MockProxy<
+    LoadAccountByUsernameRepository & AddRefreshTokenRepository
+  >
   let cryptography: MockProxy<HashComparer>
   let tokenGenerator: MockProxy<TokenGenerator>
 
@@ -79,5 +84,14 @@ describe('Authentication UseCase', () => {
       expirationInMs: AccessToken.expirationInMs
     })
     expect(tokenGenerator.generate).toHaveBeenCalledTimes(1)
+  })
+
+  it('should call AddRefreshTokenRepository with correct input', async () => {
+    await sut.perform(fakeAuthenticationInput)
+
+    expect(accountRepository.addRefreshToken).toHaveBeenCalledWith(
+      expect.any(RefreshToken)
+    )
+    expect(accountRepository.addRefreshToken).toHaveBeenCalledTimes(1)
   })
 })
