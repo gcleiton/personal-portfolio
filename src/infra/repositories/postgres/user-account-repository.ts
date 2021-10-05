@@ -1,7 +1,8 @@
 import {
   AddAccountRepository,
   CheckAccountByEmailRepository,
-  CheckAccountByUsernameRepository
+  CheckAccountByUsernameRepository,
+  LoadAccountByUsernameRepository
 } from '@/domain/contracts/repositories'
 import { User } from '@/infra/repositories/postgres/entities'
 import { PostgresRepository } from './repository'
@@ -11,7 +12,8 @@ export class UserAccountRepository
   implements
     CheckAccountByUsernameRepository,
     CheckAccountByEmailRepository,
-    AddAccountRepository
+    AddAccountRepository,
+    LoadAccountByUsernameRepository
 {
   constructor() {
     super(User)
@@ -33,5 +35,18 @@ export class UserAccountRepository
 
   async add(input: AddAccountRepository.Input): Promise<void> {
     await this.repository.insert(input)
+  }
+
+  async loadByUsername(
+    input: LoadAccountByUsernameRepository.Input
+  ): Promise<LoadAccountByUsernameRepository.Output> {
+    const account = await this.repository.findOne({ username: input.username })
+    if (account) {
+      return {
+        id: account.id.toString(),
+        username: account.username,
+        password: account.password
+      }
+    }
   }
 }
