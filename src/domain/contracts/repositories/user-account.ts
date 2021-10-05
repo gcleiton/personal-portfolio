@@ -51,9 +51,11 @@ export namespace LoadAccountByUsernameRepository {
     username: string
   }
 
-  export type Output = {
-    id: string
-    username: string
-    password: string
-  }
+  export type Output =
+    | undefined
+    | {
+        id: string
+        username: string
+        password: string
+      }
 }

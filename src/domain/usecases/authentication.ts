@@ -1,5 +1,6 @@
 import { LoadAccountByUsernameRepository } from '@/domain/contracts/repositories'
 import { Authentication } from '@/domain/contracts/usecases'
+import { AuthenticationError } from '@/domain/entities/errors'
 
 export class AuthenticationUseCase {
   constructor(
@@ -7,6 +8,12 @@ export class AuthenticationUseCase {
   ) {}
 
   async perform(input: Authentication.Input): Promise<void> {
-    await this.accountRepository.checkByUsername({ username: input.username })
+    const account = await this.accountRepository.checkByUsername({
+      username: input.username
+    })
+
+    if (account === undefined) {
+      throw new AuthenticationError()
+    }
   }
 }
