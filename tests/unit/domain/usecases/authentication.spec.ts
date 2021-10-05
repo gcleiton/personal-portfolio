@@ -54,4 +54,12 @@ describe('Authentication UseCase', () => {
     })
     expect(cryptography.compare).toHaveBeenCalledTimes(1)
   })
+
+  it('should throw AuthenticationError if HasherComparer returns false', async () => {
+    cryptography.compare.mockResolvedValueOnce(false)
+
+    const promise = sut.perform(fakeAuthenticationInput)
+
+    await expect(promise).rejects.toThrow(new AuthenticationError())
+  })
 })

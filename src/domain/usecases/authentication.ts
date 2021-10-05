@@ -15,13 +15,13 @@ export class AuthenticationUseCase {
     })
 
     if (account) {
-      await this.cryptography.compare({
+      const isValidPassword = await this.cryptography.compare({
         plainText: input.password,
         digest: account.password
       })
-    }
 
-    if (account === undefined) {
+      if (!isValidPassword) throw new AuthenticationError()
+    } else {
       throw new AuthenticationError()
     }
   }
