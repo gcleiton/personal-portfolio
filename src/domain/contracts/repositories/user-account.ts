@@ -39,3 +39,21 @@ export namespace AddAccountRepository {
     email: string
   }
 }
+
+export interface LoadAccountByUsernameRepository {
+  checkByUsername: (
+    input: LoadAccountByUsernameRepository.Input
+  ) => Promise<LoadAccountByUsernameRepository.Output>
+}
+
+export namespace LoadAccountByUsernameRepository {
+  export type Input = {
+    username: string
+  }
+
+  export type Output = {
+    id: string
+    username: string
+    password: string
+  }
+}
