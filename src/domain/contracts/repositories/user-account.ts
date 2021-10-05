@@ -41,7 +41,7 @@ export namespace AddAccountRepository {
 }
 
 export interface LoadAccountByUsernameRepository {
-  checkByUsername: (
+  loadByUsername: (
     input: LoadAccountByUsernameRepository.Input
   ) => Promise<LoadAccountByUsernameRepository.Output>
 }

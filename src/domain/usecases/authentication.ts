@@ -16,7 +16,7 @@ export class AuthenticationUseCase implements Authentication {
   ) {}
 
   async perform(input: Authentication.Input): Promise<Authentication.Output> {
-    const account = await this.accountRepository.checkByUsername({
+    const account = await this.accountRepository.loadByUsername({
       username: input.username
     })
 

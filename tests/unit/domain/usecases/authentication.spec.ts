@@ -22,7 +22,7 @@ describe('Authentication UseCase', () => {
 
   beforeAll(() => {
     accountRepository = mock()
-    accountRepository.checkByUsername.mockResolvedValue({
+    accountRepository.loadByUsername.mockResolvedValue({
       id: 'any_id',
       username: 'any_username',
       password: 'any_hashed_password'
@@ -49,14 +49,14 @@ describe('Authentication UseCase', () => {
   it('should call LoadAccountByUsernameRepository with correct input', async () => {
     await sut.perform(fakeAuthenticationInput)
 
-    expect(accountRepository.checkByUsername).toHaveBeenCalledWith({
+    expect(accountRepository.loadByUsername).toHaveBeenCalledWith({
       username: fakeAuthenticationInput.username
     })
-    expect(accountRepository.checkByUsername).toHaveBeenCalledTimes(1)
+    expect(accountRepository.loadByUsername).toHaveBeenCalledTimes(1)
   })
 
   it('should throw AuthenticationError if LoadAccountByUsernameRepository returns undefined', async () => {
-    accountRepository.checkByUsername.mockResolvedValueOnce(undefined)
+    accountRepository.loadByUsername.mockResolvedValueOnce(undefined)
 
     const promise = sut.perform(fakeAuthenticationInput)
 
