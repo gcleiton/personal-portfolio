@@ -2,12 +2,13 @@ import { Validator } from '@/application/contracts'
 import { ValidationError } from '@/application/errors'
 
 export class ValidationComposite implements Validator {
-  constructor(
-    private readonly validators: Validator[],
-    private readonly errors: Error[] = []
-  ) {}
+  errors: Error[]
 
-  validate(): Error | undefined {
+  constructor(private readonly validators: Validator[]) {
+    this.errors = []
+  }
+
+  validate(): ValidationError | undefined {
     for (const validator of this.validators) {
       const error = validator.validate()
       if (error !== undefined) {
