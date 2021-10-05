@@ -1,5 +1,6 @@
-import { HashComparer } from '@/domain/contracts/gateways'
+import { HashComparer, TokenGenerator } from '@/domain/contracts/gateways'
 import { LoadAccountByUsernameRepository } from '@/domain/contracts/repositories'
+import { AccessToken } from '@/domain/entities'
 import { AuthenticationError } from '@/domain/entities/errors'
 import { AuthenticationUseCase } from '@/domain/usecases'
 import { mock, MockProxy } from 'jest-mock-extended'
@@ -10,6 +11,7 @@ describe('Authentication UseCase', () => {
 
   let accountRepository: MockProxy<LoadAccountByUsernameRepository>
   let cryptography: MockProxy<HashComparer>
+  let tokenGenerator: MockProxy<TokenGenerator>
 
   let sut: AuthenticationUseCase
 
@@ -22,10 +24,16 @@ describe('Authentication UseCase', () => {
     })
     cryptography = mock()
     cryptography.compare.mockResolvedValue(true)
+    tokenGenerator = mock()
+    tokenGenerator.generate.mockResolvedValue('any_token')
   })
 
   beforeEach(() => {
-    sut = new AuthenticationUseCase(accountRepository, cryptography)
+    sut = new AuthenticationUseCase(
+      accountRepository,
+      cryptography,
+      tokenGenerator
+    )
   })
 
   it('should call LoadAccountByUsernameRepository with correct input', async () => {
@@ -61,5 +69,15 @@ describe('Authentication UseCase', () => {
     const promise = sut.perform(fakeAuthenticationInput)
 
     await expect(promise).rejects.toThrow(new AuthenticationError())
+  })
+
+  it('should call TokenGenerator with correct input', async () => {
+    await sut.perform(fakeAuthenticationInput)
+
+    expect(tokenGenerator.generate).toHaveBeenCalledWith({
+      key: 'any_id',
+      expirationInMs: AccessToken.expirationInMs
+    })
+    expect(tokenGenerator.generate).toHaveBeenCalledTimes(1)
   })
 })
