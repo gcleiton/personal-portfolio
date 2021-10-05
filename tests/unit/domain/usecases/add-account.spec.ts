@@ -5,14 +5,15 @@ import {
   CheckAccountByEmailRepository,
   CheckAccountByUsernameRepository
 } from '@/domain/contracts/repositories'
-import { AddAccount } from '@/domain/usecases'
-import { mockAddAccountInput } from './mocks/mock-account'
+import { AddAccountUseCase } from '@/domain/usecases'
 import {
   UsernameInUseError,
   ValidationError,
   EmailInUseError
 } from '@/domain/entities/errors'
 import { Hasher } from '@/domain/contracts/gateways'
+
+import { mockAddAccountInput } from './mocks/mock-account'
 
 describe('AddAccount', () => {
   const fakeAccount = mockAddAccountInput()
@@ -23,7 +24,7 @@ describe('AddAccount', () => {
       AddAccountRepository
   >
   let cryptography: MockProxy<Hasher>
-  let sut: AddAccount
+  let sut: AddAccountUseCase
 
   beforeAll(() => {
     accountRepository = mock()
@@ -32,7 +33,7 @@ describe('AddAccount', () => {
   })
 
   beforeEach(() => {
-    sut = new AddAccount(accountRepository, cryptography)
+    sut = new AddAccountUseCase(accountRepository, cryptography)
   })
 
   it('should call CheckAccountByUsernameRepository with correct input', async () => {

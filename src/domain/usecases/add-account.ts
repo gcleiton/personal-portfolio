@@ -9,16 +9,11 @@ import {
   EmailInUseError
 } from '@/domain/entities/errors'
 import { Hasher } from '@/domain/contracts/gateways'
+import { AddAccount } from '@/domain/contracts/usecases'
 
-export type AddAccountInput = {
-  username: string
-  firstName: string
-  lastName: string
-  password: string
-  email: string
-}
+type Input = AddAccount.Input
 
-export class AddAccount {
+export class AddAccountUseCase implements AddAccount {
   constructor(
     private readonly accountRepository: CheckAccountByUsernameRepository &
       CheckAccountByEmailRepository &
@@ -26,7 +21,7 @@ export class AddAccount {
     private readonly cryptography: Hasher
   ) {}
 
-  async perform(input: AddAccountInput): Promise<void> {
+  async perform(input: Input): Promise<void> {
     const errors = await this.validate(input)
     if (errors.length >= 1) {
       throw new ValidationError(errors)
@@ -39,7 +34,7 @@ export class AddAccount {
     await this.accountRepository.add({ ...input, password: hashedPassword })
   }
 
-  async validate(input: AddAccountInput): Promise<Error[]> {
+  async validate(input: Input): Promise<Error[]> {
     const errors = []
 
     const isUsernameInUse = await this.accountRepository.checkByUsername({

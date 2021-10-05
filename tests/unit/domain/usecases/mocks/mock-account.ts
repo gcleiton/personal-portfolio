@@ -1,6 +1,6 @@
-import { AddAccountInput } from '@/domain/usecases'
+import { AddAccount } from '@/domain/contracts/usecases'
 
-export const mockAddAccountInput = (): AddAccountInput => ({
+export const mockAddAccountInput = (): AddAccount.Input => ({
   username: 'any_username',
   firstName: 'any_firstname',
   lastName: 'any_lastName',
