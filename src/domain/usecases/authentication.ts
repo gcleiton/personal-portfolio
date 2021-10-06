@@ -9,10 +9,10 @@ import { AccessToken, RefreshToken } from '@/domain/entities'
 
 export class AuthenticationUseCase implements Authentication {
   constructor(
-    private readonly accountRepository: LoadAccountByUsernameRepository &
-      AddRefreshTokenRepository,
+    private readonly accountRepository: LoadAccountByUsernameRepository,
     private readonly cryptography: HashComparer,
-    private readonly tokenGenerator: TokenGenerator
+    private readonly tokenGenerator: TokenGenerator,
+    private readonly tokenRepository: AddRefreshTokenRepository
   ) {}
 
   async perform(input: Authentication.Input): Promise<Authentication.Output> {
@@ -33,8 +33,7 @@ export class AuthenticationUseCase implements Authentication {
         })
 
         const refreshTokenModel = new RefreshToken(account.id)
-        const { id: refreshToken } =
-          await this.accountRepository.addRefreshToken(refreshTokenModel)
+        const refreshToken = await this.tokenRepository.add(refreshTokenModel)
 
         return {
           accessToken,

@@ -59,22 +59,3 @@ export namespace LoadAccountByUsernameRepository {
         password: string
       }
 }
-
-export interface AddRefreshTokenRepository {
-  addRefreshToken: (
-    input: AddRefreshTokenRepository.Input
-  ) => Promise<AddRefreshTokenRepository.Output>
-}
-
-export namespace AddRefreshTokenRepository {
-  export type Input = {
-    userId: string
-    expiresIn: string
-  }
-
-  export type Output = {
-    id: string
-    expiresAt: string
-    userId: string
-  }
-}

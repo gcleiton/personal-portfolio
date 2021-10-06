@@ -2,9 +2,11 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn
 } from 'typeorm'
+import { RefreshToken } from './refresh-token'
 
 @Entity({ name: 'users' })
 export class User {
@@ -26,9 +28,12 @@ export class User {
   @Column({ length: 128, unique: true })
   email!: string
 
-  @CreateDateColumn({ type: 'timestamp' })
+  @OneToMany(() => RefreshToken, (refreshToken) => refreshToken.user)
+  refreshTokens!: RefreshToken[]
+
+  @CreateDateColumn({ type: 'timestamp with time zone' })
   created_at!: Date
 
-  @UpdateDateColumn({ type: 'timestamp' })
+  @UpdateDateColumn({ type: 'timestamp with time zone' })
   updated_at!: Date
 }
