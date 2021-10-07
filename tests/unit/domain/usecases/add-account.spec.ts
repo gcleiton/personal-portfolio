@@ -6,11 +6,7 @@ import {
   CheckAccountByUsernameRepository
 } from '@/domain/contracts/repositories'
 import { AddAccountUseCase } from '@/domain/usecases'
-import {
-  UsernameInUseError,
-  ValidationError,
-  EmailInUseError
-} from '@/domain/entities/errors'
+import { UsernameInUseError, EmailInUseError } from '@/domain/entities/errors'
 import { Hasher } from '@/domain/contracts/gateways'
 
 import { mockAddAccountInput } from './mocks/mock-account'
@@ -45,14 +41,12 @@ describe('AddAccount', () => {
     expect(accountRepository.checkByUsername).toHaveBeenCalledTimes(1)
   })
 
-  it('should throw ValidationError if username already taken', async () => {
+  it('should return UsernameInUseError if username already taken', async () => {
     accountRepository.checkByUsername.mockResolvedValueOnce(true)
 
-    const errorPromise = sut.perform(fakeAccount)
+    const output = await sut.perform(fakeAccount)
 
-    await expect(errorPromise).rejects.toThrow(
-      new ValidationError([new UsernameInUseError()])
-    )
+    expect(output).toContainEqual(new UsernameInUseError())
   })
 
   it('should call CheckAccountByEmailRepository with correct input', async () => {
@@ -64,25 +58,21 @@ describe('AddAccount', () => {
     expect(accountRepository.checkByEmail).toHaveBeenCalledTimes(1)
   })
 
-  it('should throw ValidationError if email already taken', async () => {
+  it('should return EmailInUseError if email already taken', async () => {
     accountRepository.checkByEmail.mockResolvedValueOnce(true)
 
-    const errorPromise = sut.perform(fakeAccount)
+    const output = await sut.perform(fakeAccount)
 
-    await expect(errorPromise).rejects.toThrow(
-      new ValidationError([new EmailInUseError()])
-    )
+    expect(output).toContainEqual(new EmailInUseError())
   })
 
-  it('should throw ValidationError if email and username already taken', async () => {
+  it('should return UsernameInUseError and EmailInUseError if email and username already taken', async () => {
     accountRepository.checkByUsername.mockResolvedValueOnce(true)
     accountRepository.checkByEmail.mockResolvedValueOnce(true)
 
-    const errorPromise = sut.perform(fakeAccount)
+    const output = await sut.perform(fakeAccount)
 
-    await expect(errorPromise).rejects.toThrow(
-      new ValidationError([new UsernameInUseError(), new EmailInUseError()])
-    )
+    expect(output).toEqual([new UsernameInUseError(), new EmailInUseError()])
   })
 
   it('should call Hasher with correct input', async () => {

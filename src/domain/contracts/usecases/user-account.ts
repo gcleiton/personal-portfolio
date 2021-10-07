@@ -1,5 +1,5 @@
 export interface AddAccount {
-  perform: (input: AddAccount.Input) => Promise<void>
+  perform: (input: AddAccount.Input) => Promise<AddAccount.Output>
 }
 
 export namespace AddAccount {
@@ -10,4 +10,6 @@ export namespace AddAccount {
     password: string
     email: string
   }
+
+  export type Output = undefined | Error[]
 }
