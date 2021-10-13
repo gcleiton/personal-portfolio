@@ -52,12 +52,12 @@ describe('Authentication UseCase', () => {
     expect(accountRepository.loadByUsername).toHaveBeenCalledTimes(1)
   })
 
-  it('should throw AuthenticationError if LoadAccountByUsernameRepository returns undefined', async () => {
+  it('should return AuthenticationError if LoadAccountByUsernameRepository returns undefined', async () => {
     accountRepository.loadByUsername.mockResolvedValueOnce(undefined)
 
-    const promise = sut.perform(fakeAuthenticationInput)
+    const result = await sut.perform(fakeAuthenticationInput)
 
-    await expect(promise).rejects.toThrow(new AuthenticationError())
+    expect(result.error).toEqual(new AuthenticationError())
   })
 
   it('should call HasherComparer with correct input', async () => {
@@ -73,9 +73,9 @@ describe('Authentication UseCase', () => {
   it('should throw AuthenticationError if HasherComparer returns false', async () => {
     cryptography.compare.mockResolvedValueOnce(false)
 
-    const promise = sut.perform(fakeAuthenticationInput)
+    const result = await sut.perform(fakeAuthenticationInput)
 
-    await expect(promise).rejects.toThrow(new AuthenticationError())
+    expect(result.error).toEqual(new AuthenticationError())
   })
 
   it('should call TokenGenerator with correct input', async () => {
@@ -96,9 +96,9 @@ describe('Authentication UseCase', () => {
   })
 
   it('should return access token and refresh token on success', async () => {
-    const output = await sut.perform(fakeAuthenticationInput)
+    const result = await sut.perform(fakeAuthenticationInput)
 
-    expect(output).toEqual({
+    expect(result.value).toEqual({
       accessToken: 'any_access_token',
       refreshToken: 'any_refresh_token'
     })

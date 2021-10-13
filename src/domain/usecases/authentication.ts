@@ -5,7 +5,10 @@ import {
 import { Authentication } from '@/domain/contracts/usecases'
 import { AuthenticationError } from '@/domain/entities/errors'
 import { HashComparer, TokenGenerator } from '@/domain/contracts/gateways'
-import { AccessToken, RefreshToken } from '@/domain/entities'
+import { AccessToken, RefreshToken, Result } from '@/domain/entities'
+
+type Input = Authentication.Input
+type Output = Authentication.Output
 
 export class AuthenticationUseCase implements Authentication {
   constructor(
@@ -15,7 +18,7 @@ export class AuthenticationUseCase implements Authentication {
     private readonly tokenRepository: AddRefreshTokenRepository
   ) {}
 
-  async perform(input: Authentication.Input): Promise<Authentication.Output> {
+  async perform(input: Input): Promise<Output> {
     const account = await this.accountRepository.loadByUsername({
       username: input.username
     })
@@ -35,13 +38,13 @@ export class AuthenticationUseCase implements Authentication {
         const refreshTokenModel = new RefreshToken(account.id)
         const refreshToken = await this.tokenRepository.add(refreshTokenModel)
 
-        return {
+        return Result.done({
           accessToken,
           refreshToken
-        }
+        })
       }
     }
 
-    throw new AuthenticationError()
+    return Result.failure(new AuthenticationError())
   }
 }
