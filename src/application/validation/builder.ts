@@ -11,14 +11,6 @@ type WithInput = {
   fieldName: string
 }
 
-type MinInput = {
-  minValue: number
-}
-
-type MaxInput = {
-  maxValue: number
-}
-
 export class ValidationBuilder {
   constructor(
     private readonly value: string,
@@ -39,16 +31,16 @@ export class ValidationBuilder {
     return this
   }
 
-  min(input: MinInput): ValidationBuilder {
+  min(minValue: number): ValidationBuilder {
     if (typeof this.value === 'string') {
-      this.validators.push(new StringMinValidator(this.value, input.minValue))
+      this.validators.push(new StringMinValidator(this.value, minValue))
     }
     return this
   }
 
-  max(input: MaxInput): ValidationBuilder {
+  max(maxValue: number): ValidationBuilder {
     if (typeof this.value === 'string') {
-      this.validators.push(new StringMinValidator(this.value, input.maxValue))
+      this.validators.push(new StringMinValidator(this.value, maxValue))
     }
     return this
   }
