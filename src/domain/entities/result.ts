@@ -15,7 +15,7 @@ export class Result<Model = any> {
     return new Result(false, error)
   }
 
-  static ok<Model>(value?: Model): Result<Model> {
+  static done<Model>(value?: Model): Result<Model> {
     return new Result(true, undefined, value)
   }
 
