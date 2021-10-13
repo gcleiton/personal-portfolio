@@ -6,6 +6,8 @@ import {
 import { UsernameInUseError, EmailInUseError } from '@/domain/entities/errors'
 import { Hasher } from '@/domain/contracts/gateways'
 import { AddAccount } from '@/domain/contracts/usecases'
+import { Result } from '@/domain/entities'
+import { ValidationError } from '@/application/errors'
 
 type Input = AddAccount.Input
 type Output = AddAccount.Output
@@ -20,15 +22,20 @@ export class AddAccountUseCase implements AddAccount {
 
   async perform(input: Input): Promise<Output> {
     const errors = await this.validate(input)
-    if (errors.length >= 1) {
-      return errors
+    if (errors.length > 0) {
+      return Result.failure(new ValidationError(errors))
     }
 
     const hashedPassword = await this.cryptography.hash({
       plainText: input.password
     })
 
-    await this.accountRepository.add({ ...input, password: hashedPassword })
+    const { id } = await this.accountRepository.add({
+      ...input,
+      password: hashedPassword
+    })
+
+    return Result.done({ id })
   }
 
   async validate(input: Input): Promise<Error[]> {

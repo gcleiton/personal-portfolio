@@ -33,8 +33,14 @@ export class UserAccountRepository
     return account !== undefined
   }
 
-  async add(input: AddAccountRepository.Input): Promise<void> {
-    await this.repository.insert(input)
+  async add(
+    input: AddAccountRepository.Input
+  ): Promise<AddAccountRepository.Output> {
+    const account = await this.repository.save(input)
+
+    return {
+      id: account.id.toString()
+    }
   }
 
   async loadByUsername(

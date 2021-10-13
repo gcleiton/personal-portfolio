@@ -10,6 +10,7 @@ import { UsernameInUseError, EmailInUseError } from '@/domain/entities/errors'
 import { Hasher } from '@/domain/contracts/gateways'
 
 import { mockAddAccountInput } from './mocks/mock-account'
+import { ValidationError } from '@/application/errors'
 
 describe('AddAccount', () => {
   const fakeAccount = mockAddAccountInput()
@@ -24,6 +25,9 @@ describe('AddAccount', () => {
 
   beforeAll(() => {
     accountRepository = mock()
+    accountRepository.add.mockResolvedValue({
+      id: 'any_id'
+    })
     cryptography = mock()
     cryptography.hash.mockResolvedValue('hashed_password')
   })
@@ -41,12 +45,14 @@ describe('AddAccount', () => {
     expect(accountRepository.checkByUsername).toHaveBeenCalledTimes(1)
   })
 
-  it('should return UsernameInUseError if username already taken', async () => {
+  it('should return ValidationError with UsernameInUseError if username already taken', async () => {
     accountRepository.checkByUsername.mockResolvedValueOnce(true)
 
-    const output = await sut.perform(fakeAccount)
+    const result = await sut.perform(fakeAccount)
 
-    expect(output).toContainEqual(new UsernameInUseError())
+    expect(result.error).toEqual(
+      new ValidationError([new UsernameInUseError()])
+    )
   })
 
   it('should call CheckAccountByEmailRepository with correct input', async () => {
@@ -61,18 +67,20 @@ describe('AddAccount', () => {
   it('should return EmailInUseError if email already taken', async () => {
     accountRepository.checkByEmail.mockResolvedValueOnce(true)
 
-    const output = await sut.perform(fakeAccount)
+    const result = await sut.perform(fakeAccount)
 
-    expect(output).toContainEqual(new EmailInUseError())
+    expect(result.error).toEqual(new ValidationError([new EmailInUseError()]))
   })
 
   it('should return UsernameInUseError and EmailInUseError if email and username already taken', async () => {
     accountRepository.checkByUsername.mockResolvedValueOnce(true)
     accountRepository.checkByEmail.mockResolvedValueOnce(true)
 
-    const output = await sut.perform(fakeAccount)
+    const result = await sut.perform(fakeAccount)
 
-    expect(output).toEqual([new UsernameInUseError(), new EmailInUseError()])
+    expect(result.error).toEqual(
+      new ValidationError([new UsernameInUseError(), new EmailInUseError()])
+    )
   })
 
   it('should call Hasher with correct input', async () => {
@@ -92,5 +100,13 @@ describe('AddAccount', () => {
       password: 'hashed_password'
     })
     expect(accountRepository.add).toHaveBeenCalledTimes(1)
+  })
+
+  it('should return id on success', async () => {
+    const result = await sut.perform(fakeAccount)
+
+    expect(result.value).toEqual({
+      id: 'any_id'
+    })
   })
 })

@@ -1,3 +1,5 @@
+import { Result } from '@/domain/entities'
+
 export interface AddAccount {
   perform: (input: AddAccount.Input) => Promise<AddAccount.Output>
 }
@@ -11,5 +13,5 @@ export namespace AddAccount {
     email: string
   }
 
-  export type Output = undefined | Error[]
+  export type Output = Result<{ id: string }>
 }
