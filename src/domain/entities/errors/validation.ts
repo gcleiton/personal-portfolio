@@ -1,8 +1,9 @@
 export class ValidationError extends Error {
-  errors: Error[]
+  constructor(private readonly _errors: Error[]) {
+    super('Falha na Validação')
+  }
 
-  constructor(errors: Error[]) {
-    super('Falha na Validação.')
-    this.errors = errors
+  get errors(): Error[] {
+    return this.errors
   }
 }

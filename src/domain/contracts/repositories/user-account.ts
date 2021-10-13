@@ -27,7 +27,9 @@ export namespace CheckAccountByEmailRepository {
 }
 
 export interface AddAccountRepository {
-  add: (input: AddAccountRepository.Input) => Promise<void>
+  add: (
+    input: AddAccountRepository.Input
+  ) => Promise<AddAccountRepository.Output>
 }
 
 export namespace AddAccountRepository {
@@ -37,6 +39,10 @@ export namespace AddAccountRepository {
     lastName: string
     password: string
     email: string
+  }
+
+  export type Output = {
+    id: string
   }
 }
 

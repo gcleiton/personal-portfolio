@@ -1,11 +1,9 @@
+import { mock, MockProxy } from 'jest-mock-extended'
+
 import { HttpResponse } from '@/application/contracts'
 import { Controller } from '@/application/controllers/controller'
-import { ServerError } from '@/application/errors'
-import { ValidationComposite } from '@/application/validation/composite'
-
-import { mocked } from 'ts-jest/utils'
-
-jest.mock('@/application/validation/composite')
+import { ServerError, ValidationError } from '@/application/errors'
+import { Validation } from '@/application/validation'
 
 class ControllerStub extends Controller {
   result: HttpResponse = {
@@ -19,25 +17,42 @@ class ControllerStub extends Controller {
 }
 
 describe('Controller', () => {
+  let validation: MockProxy<Validation>
   let sut: ControllerStub
 
-  beforeEach(() => {
-    sut = new ControllerStub()
+  beforeAll(() => {
+    validation = mock()
   })
 
-  it('should return 400 if validation fails', async () => {
-    const error = new Error('validation_error')
-    const ValidationCompositeSpy = jest.fn().mockImplementationOnce(() => ({
-      validate: jest.fn().mockReturnValueOnce(error)
-    }))
-    mocked(ValidationComposite).mockImplementationOnce(ValidationCompositeSpy)
+  beforeEach(() => {
+    sut = new ControllerStub(validation)
+  })
+
+  it('should call Validation with correct input', async () => {
+    await sut.handle('any_value')
+
+    expect(validation.validate).toHaveBeenCalled()
+    expect(validation.validate).toHaveBeenCalledTimes(1)
+  })
+
+  it('should not call Validation if not inject', async () => {
+    const sut = new ControllerStub()
+
+    await sut.handle('any_value')
+
+    expect(validation.validate).not.toHaveBeenCalled()
+  })
+
+  it('should return 422 if Validation returns errors', async () => {
+    const errors = [new Error('any_error')]
+    const validationError = new ValidationError(errors)
+    validation.validate.mockReturnValueOnce(validationError)
 
     const response = await sut.handle('any_value')
 
-    expect(ValidationComposite).toHaveBeenCalledWith([])
     expect(response).toEqual({
-      statusCode: 400,
-      data: error
+      statusCode: 422,
+      data: validationError
     })
   })
 
