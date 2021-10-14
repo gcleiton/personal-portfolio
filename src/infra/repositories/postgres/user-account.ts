@@ -7,7 +7,7 @@ import {
 import { User } from '@/infra/repositories/postgres/entities'
 import { PostgresRepository } from './repository'
 
-export class UserAccountRepository
+export class PostgresUserAccountRepository
   extends PostgresRepository<User>
   implements
     CheckAccountByUsernameRepository,
