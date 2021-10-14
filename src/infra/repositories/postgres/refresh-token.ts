@@ -2,7 +2,7 @@ import { AddRefreshTokenRepository } from '@/domain/contracts/repositories'
 import { RefreshToken } from '@/infra/repositories/postgres/entities'
 import { PostgresRepository } from './repository'
 
-export class RefreshTokenRepository
+export class PostgresRefreshTokenRepository
   extends PostgresRepository<RefreshToken>
   implements AddRefreshTokenRepository
 {
