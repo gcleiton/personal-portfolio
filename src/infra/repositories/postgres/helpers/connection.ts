@@ -1,10 +1,17 @@
-import { Connection, ObjectType, Repository } from 'typeorm'
+import {
+  Connection,
+  createConnection,
+  getConnection,
+  getConnectionManager,
+  ObjectType,
+  Repository
+} from 'typeorm'
 
 import { ConnectionNotFoundError } from '@/infra/repositories/postgres/errors'
 
 export class PostgresConnection {
   private static instance?: PostgresConnection
-  private readonly connection?: Connection
+  private connection?: Connection
 
   private constructor() {}
 
@@ -14,6 +21,18 @@ export class PostgresConnection {
     }
 
     return PostgresConnection.instance
+  }
+
+  async connect(): Promise<void> {
+    this.connection = getConnectionManager().has('default')
+      ? getConnection()
+      : await createConnection()
+  }
+
+  async disconnect(): Promise<void> {
+    if (this.connection === undefined) throw new ConnectionNotFoundError()
+    await getConnection().close()
+    this.connection = undefined
   }
 
   isConnected(): boolean {
