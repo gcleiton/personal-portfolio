@@ -1,7 +1,14 @@
-import express from 'express'
 import 'reflect-metadata'
 
-const app = express()
-app.listen(5050, () => {
-  console.log('Server running at http://localhost:5050')
-})
+import { PostgresConnection } from '@/infra/repositories/postgres/helpers'
+import { env } from '@/main/configs/env'
+
+PostgresConnection.getInstance()
+  .connect()
+  .then(async () => {
+    const { app } = await import('@/main/configs/app')
+    app.listen(env.port, () =>
+      console.log(`Server running at http://localhost:${env.port}`)
+    )
+  })
+  .catch(console.error)
