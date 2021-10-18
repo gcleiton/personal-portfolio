@@ -7,6 +7,7 @@
   "license": "MIT",
   "scripts": {
     "start": "node dist/main/server.js",
+    "dev": "",
     "build": "rimraf dist && tsc -p tsconfig-build.json",
     "build:watch": "rimraf dist && tsc -p tsconfig-build.json -w",
     "debug": "nodemon -L --watch ./dist ./dist/main/server.js",
@@ -18,6 +19,11 @@
     "test:integration": "yarn test --watch -c jest-integration.config.js",
     "test:staged": "yarn test --findRelatedTests",
     "test:ci": "yarn test --coverage",
+    "typeorm": "ts-node-dev -r tsconfig-paths/register ./node_modules/typeorm/cli.js",
+    "migrate:create": "yarn typeorm migration:create -n",
+    "migrate:generate": "yarn typeorm migration:generate -n",
+    "migrate:run": "yarn typeorm migration:run",
+    "migrate:rollback": "yarn typeorm migration:revert",
     "postinstall": "husky install"
   },
   "devDependencies": {
@@ -41,6 +47,8 @@
     "lint-staged": "^11.0.1",
     "prettier": "^2.3.2",
     "ts-jest": "^27.0.5",
+    "ts-node-dev": "^1.1.8",
+    "tsconfig-paths": "^3.11.0",
     "typescript": "^4.3.5"
   },
   "dependencies": {
