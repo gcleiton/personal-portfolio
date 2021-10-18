@@ -10,10 +10,10 @@ import { RefreshToken } from './refresh-token'
 
 @Entity({ name: 'users' })
 export class User {
-  @PrimaryGeneratedColumn()
-  id!: number
+  @PrimaryGeneratedColumn('uuid')
+  id!: string
 
-  @Column({ length: 32, unique: true })
+  @Column({ length: 62, unique: true })
   username!: string
 
   @Column({ name: 'first_name', length: 64 })
