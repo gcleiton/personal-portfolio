@@ -6,7 +6,9 @@ import { env } from '@/main/configs/env'
 PostgresConnection.getInstance()
   .connect()
   .then(async () => {
-    const { app } = await import('@/main/configs/app')
+    const { setupApp } = await import('@/main/configs/app')
+    const app = await setupApp()
+
     app.listen(env.port, () =>
       console.log(`Server running at http://localhost:${env.port}`)
     )

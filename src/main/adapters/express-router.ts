@@ -3,7 +3,7 @@ import { RequestHandler } from 'express'
 
 type Adapter = (controller: Controller) => RequestHandler
 
-export const adaptRoute: Adapter = (controller: Controller) => {
+export const adaptRoute: Adapter = (controller) => {
   return async (req, res) => {
     const request = {
       ...req.body
