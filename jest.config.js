@@ -1,15 +1,20 @@
 module.exports = {
-  roots: ['<rootDir>/tests'],
-  collectCoverageFrom: ['<rootDir>/tests/**/*.ts', '!<rootDir>/src/main/**'],
+  roots: ['<rootDir>/src', '<rootDir>/tests'],
+  collectCoverageFrom: [
+    '<rootDir>/src/**/*.ts',
+    '!<rootDir>/src/main/**',
+    '!<rootDir>/src/**/index.ts'
+  ],
   coverageDirectory: 'coverage',
   coverageProvider: 'babel',
   testEnvironment: 'node',
   transform: {
-    '.+\\.ts$': 'ts-jest'
+    '\\.ts$': 'ts-jest'
   },
   moduleNameMapper: {
     '@/tests/(.*)': '<rootDir>/tests/$1',
     '@/(.*)': '<rootDir>/src/$1'
   },
-  clearMocks: true
+  clearMocks: true,
+  setupFiles: ['dotenv/config']
 }
