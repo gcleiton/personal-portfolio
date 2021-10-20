@@ -1,7 +1,8 @@
+import { mock, MockProxy } from 'jest-mock-extended'
+
 import { Validator } from '@/application/contracts'
 import { ValidationError } from '@/application/errors'
 import { ValidationComposite } from '@/application/validation'
-import { mock, MockProxy } from 'jest-mock-extended'
 
 describe('ValidationComposite', () => {
   let sut: ValidationComposite

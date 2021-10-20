@@ -2,7 +2,7 @@ import { mock, MockProxy } from 'jest-mock-extended'
 
 import { HttpResponse } from '@/application/contracts'
 import { Controller } from '@/application/controllers/controller'
-import { ServerError, ValidationError } from '@/application/errors'
+import { ServerError } from '@/application/errors'
 import { Validation } from '@/application/validation'
 
 class ControllerStub extends Controller {
@@ -45,14 +45,13 @@ describe('Controller', () => {
 
   it('should return 422 if Validation returns errors', async () => {
     const errors = [new Error('any_error')]
-    const validationError = new ValidationError(errors)
-    validation.validate.mockReturnValueOnce(validationError)
+    validation.validate.mockReturnValueOnce(errors)
 
     const response = await sut.handle('any_value')
 
     expect(response).toEqual({
       statusCode: 422,
-      data: validationError
+      data: errors
     })
   })
 
