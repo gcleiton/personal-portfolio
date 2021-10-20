@@ -16,6 +16,8 @@ export class ValidationComposite implements Validator {
       }
     }
 
-    return new ValidationError(this.errors)
+    if (this.errors.length > 0) {
+      return new ValidationError(this.errors)
+    }
   }
 }
