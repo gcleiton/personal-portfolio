@@ -16,10 +16,10 @@ export const conflict = (
   }
 }
 
-export const unprocessableEntity = (error: Error): HttpResponse<Error> => {
+export const unprocessableEntity = (errors: Error[]): HttpResponse<Error[]> => {
   return {
     statusCode: 422,
-    data: error
+    data: errors
   }
 }
 

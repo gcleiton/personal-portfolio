@@ -9,9 +9,9 @@ export abstract class Controller {
 
   async handle(request: any): Promise<HttpResponse> {
     if (this.validation) {
-      const error = this.validation.validate(request)
-      if (error !== undefined) {
-        return unprocessableEntity(error)
+      const errors = this.validation.validate(request)
+      if (errors !== undefined) {
+        return unprocessableEntity(errors)
       }
     }
 
