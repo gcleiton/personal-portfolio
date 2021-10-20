@@ -7,6 +7,7 @@
   "license": "MIT",
   "scripts": {
     "start": "node dist/main/server.js",
+    "dev": "ts-node-dev -r tsconfig-paths/register --respawn --transpile-only --inspect=0.0.0.0:9229 src/main",
     "build": "rimraf dist && tsc -p tsconfig-build.json",
     "build:watch": "rimraf dist && tsc -p tsconfig-build.json -w",
     "debug": "nodemon -L --watch ./dist ./dist/main/server.js",
