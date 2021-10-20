@@ -3,6 +3,7 @@ import {
   createConnection,
   getConnection,
   getConnectionManager,
+  getRepository,
   ObjectType,
   Repository
 } from 'typeorm'
@@ -40,10 +41,10 @@ export class PostgresConnection {
   }
 
   getRepository<Entity>(entity: ObjectType<Entity>): Repository<Entity> {
-    if (this.isConnected()) {
+    if (!this.isConnected()) {
       throw new ConnectionNotFoundError()
     }
 
-    return this.getRepository(entity)
+    return getRepository(entity)
   }
 }
