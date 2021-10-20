@@ -2,9 +2,9 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
   ManyToOne,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn
+  PrimaryGeneratedColumn
 } from 'typeorm'
 import { User } from '.'
 
@@ -13,18 +13,16 @@ export class RefreshToken {
   @PrimaryGeneratedColumn('uuid')
   id!: string
 
+  @Column({ name: 'user_id' })
+  userId!: string
+
+  @ManyToOne(() => User, (user) => user.refreshTokens)
+  @JoinColumn({ name: 'user_id' })
+  user!: User
+
   @Column({ name: 'expires_at', type: 'timestamp with time zone' })
   expiresAt!: string
 
-  @Column({ name: 'user_id' })
-  userId!: number
-
-  @ManyToOne(() => User, (user) => user.refreshTokens)
-  user!: User
-
   @CreateDateColumn({ type: 'timestamp with time zone' })
   created_at!: Date
-
-  @UpdateDateColumn({ type: 'timestamp with time zone' })
-  updated_at!: Date
 }

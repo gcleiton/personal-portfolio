@@ -6,7 +6,7 @@ export interface AddRefreshTokenRepository {
 
 export namespace AddRefreshTokenRepository {
   export type Input = {
-    userId: number
+    userId: string
     expiresIn: string
   }
 

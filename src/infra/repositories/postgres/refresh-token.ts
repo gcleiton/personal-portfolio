@@ -13,7 +13,10 @@ export class PostgresRefreshTokenRepository
   async add(
     input: AddRefreshTokenRepository.Input
   ): Promise<AddRefreshTokenRepository.Output> {
-    const refreshToken = await this.repository.save(input)
+    const refreshToken = await this.getRepository().save({
+      userId: input.userId,
+      expiresAt: input.expiresIn
+    })
 
     return refreshToken.id
   }

@@ -34,8 +34,8 @@ export class AuthenticationUseCase implements Authentication {
           key: account.id,
           expirationInMs: AccessToken.expirationInMs
         })
-
         const refreshTokenModel = new RefreshToken(account.id)
+
         const refreshToken = await this.tokenRepository.add(refreshTokenModel)
 
         return Result.done({

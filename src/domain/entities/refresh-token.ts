@@ -1,11 +1,11 @@
 import dayjs from 'dayjs'
 
 export class RefreshToken {
-  userId: number
+  userId: string
   expiresIn: string
 
   constructor(userId: string) {
-    this.userId = parseInt(userId)
+    this.userId = userId
     this.expiresIn = dayjs().add(30, 'day').toISOString()
   }
 }
