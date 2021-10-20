@@ -2,6 +2,7 @@ import { Validator } from '@/application/contracts'
 import {
   EmailValidator,
   RequiredValidator,
+  StringMaxValidator,
   StringMinValidator,
   StringRequiredValidator
 } from '@/application/validation/validators'
@@ -40,7 +41,7 @@ export class ValidationBuilder {
 
   max(maxValue: number): ValidationBuilder {
     if (typeof this.value === 'string') {
-      this.validators.push(new StringMinValidator(this.value, maxValue))
+      this.validators.push(new StringMaxValidator(this.value, maxValue))
     }
     return this
   }
